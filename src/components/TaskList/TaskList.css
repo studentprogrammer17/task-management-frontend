@@ -1,0 +1,68 @@
+.task-list-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.task-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.tasks-container {
+  margin-top: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.task-list-with-comments {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+}
+
+.task-list-container {
+  flex: 2;
+  min-width: 0;
+}
+
+.comments-panel-wrapper {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  position: sticky;
+  top: 16px;
+  margin-left: -350px;
+}
+
+.map-container {
+  height: 300px;
+  width: 100%;
+  margin-top: 20px;
+}
+.task-item-wrapper {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.task-item-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-item-wrapper:active {
+  transform: translateY(0);
+}

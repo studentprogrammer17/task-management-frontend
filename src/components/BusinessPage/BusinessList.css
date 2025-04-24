@@ -1,0 +1,151 @@
+.business-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.business-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 300px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.business-card > *:not(.business-actions) {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.business-card > *:not(.business-actions):hover {
+  transform: translateY(-5px);
+}
+
+.business-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.business-card:hover::after {
+  opacity: 1;
+}
+
+.business-card:hover::after .business-actions {
+  background: red;
+}
+
+.business-image {
+  width: 100%;
+  height: 200px;
+  margin: -20px -20px 20px -20px;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+.business-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.business-image img:hover {
+  transform: scale(1.05);
+}
+
+.business-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.business-info h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.business-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.business-info p:last-child {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  max-height: 4.5em;
+}
+
+.business-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  position: relative;
+  z-index: 2;
+}
+
+.business-actions button {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  position: relative;
+  z-index: 3;
+}
+
+.business-actions .btn-warning {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.business-actions .btn-warning:hover {
+  background-color: #ffb300;
+}
+
+.business-actions .btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.business-actions .btn-danger:hover {
+  background-color: #c82333;
+}

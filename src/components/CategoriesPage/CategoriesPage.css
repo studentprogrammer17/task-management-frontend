@@ -1,0 +1,19 @@
+.categories-page {
+  max-width: 800px;
+  margin: auto;
+}
+
+.categories-page h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.categories-page .list-group-item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.categories-page .btn {
+  min-width: 90px;
+}
