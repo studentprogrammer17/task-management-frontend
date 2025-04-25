@@ -149,3 +149,15 @@
 .business-actions .btn-danger:hover {
   background-color: #c82333;
 }
+
+
+.status-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.status-buttons .btn {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}

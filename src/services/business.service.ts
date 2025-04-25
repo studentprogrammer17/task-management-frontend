@@ -32,14 +32,14 @@ export const BusinessService = {
     return response.json();
   },
 
-  async getAllBusinessesByAdmin(): Promise<ApiResponse<Business[]>> {
+  async getBusinessesByStatus(status: string): Promise<ApiResponse<Business[]>> {
     const token = AuthService.getToken();
 
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
-    const response = await fetch(`${API_URL}/all`, {
+    const response = await fetch(`${API_URL}/status/${status}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -179,5 +179,27 @@ export const BusinessService = {
     if (!response.ok) {
       throw new Error('Failed to delete business');
     }
+  },
+
+  async changeStatus(id: string, status: string): Promise<Business> {
+    const token = AuthService.getToken();
+
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
+    const response = await fetch(`${API_URL}/change-status/${id}/${status}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to change status');
+    }
+
+    return response.json();
   },
 };

@@ -11,6 +11,7 @@ import ConfirmationDialog from '../Common/ConfirmationDialog';
 import UniqueBusiness from '../UniqueBusiness/UniqueBusiness';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import './BusinessPage.css';
+import { useLocation } from 'react-router-dom';
 
 interface BusinessPageProps {
   isAdmin: boolean;
@@ -31,10 +32,32 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
   });
   const [refetchKey, setRefetchKey] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const fetchBusinesses = async () => {
+    try {
+      let response;
+      if (isAdmin && location.pathname.includes('pending-businesses')) {
+        response = await BusinessService.getBusinessesByStatus('pending');
+      } else if (isAdmin && location.pathname.includes('rejected-businesses')) {
+        response = await BusinessService.getBusinessesByStatus('rejected');
+      } else {
+        if (isAdmin) {
+          response = await BusinessService.getBusinessesByStatus('approved');
+        } else {
+          response = await BusinessService.getAllBusinesses();
+        }
+      }
+      setBusinesses(response.data || []);
+    } catch (error) {
+      console.error('Error fetching businesses:', error);
+      setBusinesses([]);
+    }
+  };
 
   useEffect(() => {
     fetchBusinesses();
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (isFormOpen || editingBusiness || deleteConfirmation.isOpen) {
@@ -48,15 +71,15 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
     };
   }, [isFormOpen, editingBusiness, deleteConfirmation.isOpen]);
 
-  const fetchBusinesses = async () => {
-    try {
-      const response = await BusinessService.getAllBusinesses();
-      setBusinesses(response.data || []);
-    } catch (error) {
-      console.error('Error fetching businesses:', error);
-      setBusinesses([]);
-    }
-  };
+  // const fetchBusinesses = async () => {
+  //   try {
+  //     const response = await BusinessService.getAllBusinesses();
+  //     setBusinesses(response.data || []);
+  //   } catch (error) {
+  //     console.error('Error fetching businesses:', error);
+  //     setBusinesses([]);
+  //   }
+  // };
 
   const handleCreateBusiness = async (
     businessData: CreateBusinessDto & { image?: File }
@@ -90,6 +113,15 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
       businessId: id,
       businessName: name,
     });
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    try {
+      await BusinessService.changeStatus(id, newStatus);
+      fetchBusinesses();
+    } catch (error) {
+      console.error('Error changing business status:', error);
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -139,21 +171,66 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
             <>
               <header className="business-header">
                 <div className="header-content">
-                  <h1>Business Management</h1>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setIsFormOpen(true)}
-                  >
-                    Add New Business
-                  </button>
+                  <h1>
+                    {location.pathname.includes('pending-businesses') &&
+                      'Pending Businesses'}
+                    {location.pathname.includes('rejected-businesses') &&
+                      'Rejected Businesses'}
+                    {!location.pathname.includes('pending-businesses') &&
+                      !location.pathname.includes('rejected-businesses') &&
+                      'Business Management'}
+                  </h1>
+
+                  <div className="header-buttons">
+                    {isAdmin && (
+                      <>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => navigate('/rejected-businesses')}
+                          disabled={location.pathname.includes(
+                            'rejected-businesses'
+                          )}
+                        >
+                          Rejected Businesses
+                        </button>
+
+                        <button
+                          className="btn btn-pending"
+                          onClick={() => navigate('/pending-businesses')}
+                          disabled={location.pathname.includes(
+                            'pending-businesses'
+                          )}
+                        >
+                          Pending Businesses
+                        </button>
+
+                        <button
+                          className="btn btn-approved"
+                          onClick={() => navigate('/business')}
+                          disabled={location.pathname === '/business'}
+                        >
+                          Approved Businesses
+                        </button>
+                      </>
+                    )}
+
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setIsFormOpen(true)}
+                    >
+                      Add New Business
+                    </button>
+                  </div>
                 </div>
               </header>
 
               <main className="business-main">
                 <BusinessList
                   businesses={businesses}
+                  isAdmin={isAdmin}
                   onEdit={setEditingBusiness}
                   onDelete={handleDeleteClick}
+                  onChangeStatus={handleStatusChange}
                 />
               </main>
             </>

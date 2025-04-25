@@ -162,6 +162,26 @@ function AppContent() {
                 path="/users"
                 element={isAdmin ? <UsersPage /> : <Navigate to="/" />}
               />
+              <Route
+                path="/pending-businesses"
+                element={
+                  isAdmin ? (
+                    <BusinessPage isAdmin={isAdmin} />
+                  ) : (
+                    <Navigate to="/" />
+                  )
+                }
+              />
+              <Route
+                path="/rejected-businesses"
+                element={
+                  isAdmin ? (
+                    <BusinessPage isAdmin={isAdmin} />
+                  ) : (
+                    <Navigate to="/" />
+                  )
+                }
+              />
             </Route>
             <Route
               path="*"
@@ -171,7 +191,13 @@ function AppContent() {
             />
             <Route
               path="/categories"
-              element={isAuth ? <CategoriesPage isAdmin={isAdmin}/> : <Navigate to="/sign-up" />}
+              element={
+                isAuth ? (
+                  <CategoriesPage isAdmin={isAdmin} />
+                ) : (
+                  <Navigate to="/sign-up" />
+                )
+              }
             />
             <Route
               path="/profile"
@@ -179,7 +205,13 @@ function AppContent() {
             />
             <Route
               path="/business/*"
-              element={isAuth ? <BusinessPage isAdmin={isAdmin}/> : <Navigate to="/sign-up" />}
+              element={
+                isAuth ? (
+                  <BusinessPage isAdmin={isAdmin} />
+                ) : (
+                  <Navigate to="/sign-up" />
+                )
+              }
             />
             <Route path="/task/:id" element={<UniqueTask />} />
           </Routes>

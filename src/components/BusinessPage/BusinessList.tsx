@@ -1,18 +1,23 @@
 import React from 'react';
 import { Business } from '../../models/Business';
 import { useNavigate } from 'react-router-dom';
+import { BusinessService } from '../../services/business.service';
 import './BusinessList.css';
 
 interface BusinessListProps {
   businesses: Business[];
+  isAdmin: boolean;
   onEdit: (business: Business) => void;
   onDelete: (id: string, name: string) => void;
+  onChangeStatus: (id: string, name: string) => void;
 }
 
 const BusinessList: React.FC<BusinessListProps> = ({
   businesses,
+  isAdmin,
   onEdit,
   onDelete,
+  onChangeStatus,
 }) => {
   const navigate = useNavigate();
 
@@ -28,6 +33,15 @@ const BusinessList: React.FC<BusinessListProps> = ({
   const handleDeleteClick = (e: React.MouseEvent, id: string, name: string) => {
     e.stopPropagation();
     onDelete(id, name);
+  };
+
+  const handleStatusChange = (
+    e: React.MouseEvent,
+    id: string,
+    status: string
+  ) => {
+    e.stopPropagation();
+    onChangeStatus(id, status);
   };
 
   return (
@@ -53,6 +67,9 @@ const BusinessList: React.FC<BusinessListProps> = ({
           <div className="business-info">
             <h3>{business.name}</h3>
             <p>
+              <strong>Status:</strong> {business.status.toUpperCase()}
+            </p>
+            <p>
               <strong>Owner:</strong> {business.ownerFullName}
             </p>
             <p>
@@ -73,6 +90,7 @@ const BusinessList: React.FC<BusinessListProps> = ({
               </p>
             )}
           </div>
+
           <div className="business-actions">
             <button
               className="btn btn-warning"
@@ -86,6 +104,34 @@ const BusinessList: React.FC<BusinessListProps> = ({
             >
               Delete
             </button>
+
+            {isAdmin && business.status === 'pending' && (
+              <div className="status-buttons">
+                <button
+                  className="btn btn-success"
+                  onClick={e => handleStatusChange(e, business.id, 'approved')}
+                >
+                  Approve
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={e => handleStatusChange(e, business.id, 'rejected')}
+                >
+                  Reject
+                </button>
+              </div>
+            )}
+
+            {isAdmin && business.status === 'rejected' && (
+              <div className="status-buttons">
+                <button
+                  className="btn btn-success"
+                  onClick={e => handleStatusChange(e, business.id, 'approved')}
+                >
+                  Approve
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ))}
