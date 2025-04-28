@@ -32,22 +32,33 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
   });
   const [refetchKey, setRefetchKey] = useState(0);
   const navigate = useNavigate();
-  const location = useLocation();
+  const [viewMode, setViewMode] = useState<
+    'all' | 'my' | 'approved' | 'pending' | 'rejected'
+  >('all');
 
   const fetchBusinesses = async () => {
     try {
       let response;
-      if (isAdmin && location.pathname.includes('pending-businesses')) {
-        response = await BusinessService.getBusinessesByStatus('pending');
-      } else if (isAdmin && location.pathname.includes('rejected-businesses')) {
-        response = await BusinessService.getBusinessesByStatus('rejected');
-      } else {
-        if (isAdmin) {
+
+      switch (viewMode) {
+        case 'my':
+          response = await BusinessService.getAllUserBusinesses();
+          break;
+        case 'pending':
+          response = await BusinessService.getBusinessesByStatus('pending');
+          break;
+        case 'rejected':
+          response = await BusinessService.getBusinessesByStatus('rejected');
+          break;
+        case 'approved':
           response = await BusinessService.getBusinessesByStatus('approved');
-        } else {
+          break;
+        case 'all':
+        default:
           response = await BusinessService.getAllBusinesses();
-        }
+          break;
       }
+
       setBusinesses(response.data || []);
     } catch (error) {
       console.error('Error fetching businesses:', error);
@@ -57,7 +68,7 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
 
   useEffect(() => {
     fetchBusinesses();
-  }, [location.pathname]);
+  }, [viewMode]);
 
   useEffect(() => {
     if (isFormOpen || editingBusiness || deleteConfirmation.isOpen) {
@@ -172,42 +183,52 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
               <header className="business-header">
                 <div className="header-content">
                   <h1>
-                    {location.pathname.includes('pending-businesses') &&
-                      'Pending Businesses'}
-                    {location.pathname.includes('rejected-businesses') &&
-                      'Rejected Businesses'}
-                    {!location.pathname.includes('pending-businesses') &&
-                      !location.pathname.includes('rejected-businesses') &&
-                      'Business Management'}
+                    {viewMode === 'pending' && 'Pending Businesses'}
+                    {viewMode === 'rejected' && 'Rejected Businesses'}
+                    {viewMode === 'approved' && 'Approved Businesses'}
+                    {viewMode === 'my' && 'My Businesses'}
+                    {viewMode === 'all' && 'All Businesses'}
                   </h1>
 
                   <div className="header-buttons">
+                    <button
+                      className={`btn ${viewMode === 'all' ? 'btn-active' : ''}`}
+                      onClick={() => setViewMode('all')}
+                      disabled={viewMode === 'all'}
+                    >
+                      All Businesses
+                    </button>
+
+                    <button
+                      className={`btn ${viewMode === 'my' ? 'btn-active' : ''}`}
+                      onClick={() => setViewMode('my')}
+                      disabled={viewMode === 'my'}
+                    >
+                      My Businesses
+                    </button>
+
                     {isAdmin && (
                       <>
                         <button
-                          className="btn btn-danger"
-                          onClick={() => navigate('/rejected-businesses')}
-                          disabled={location.pathname.includes(
-                            'rejected-businesses'
-                          )}
+                          className={`btn ${viewMode === 'rejected' ? 'btn-active' : ''}`}
+                          onClick={() => setViewMode('rejected')}
+                          disabled={viewMode === 'rejected'}
                         >
                           Rejected Businesses
                         </button>
 
                         <button
-                          className="btn btn-pending"
-                          onClick={() => navigate('/pending-businesses')}
-                          disabled={location.pathname.includes(
-                            'pending-businesses'
-                          )}
+                          className={`btn ${viewMode === 'pending' ? 'btn-active' : ''}`}
+                          onClick={() => setViewMode('pending')}
+                          disabled={viewMode === 'pending'}
                         >
                           Pending Businesses
                         </button>
 
                         <button
-                          className="btn btn-approved"
-                          onClick={() => navigate('/business')}
-                          disabled={location.pathname === '/business'}
+                          className={`btn ${viewMode === 'approved' ? 'btn-active' : ''}`}
+                          onClick={() => setViewMode('approved')}
+                          disabled={viewMode === 'approved'}
                         >
                           Approved Businesses
                         </button>
@@ -226,6 +247,7 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
 
               <main className="business-main">
                 <BusinessList
+                  showMyBusinesses={viewMode === 'my'}
                   businesses={businesses}
                   isAdmin={isAdmin}
                   onEdit={setEditingBusiness}
@@ -240,6 +262,8 @@ const BusinessPage: React.FC<BusinessPageProps> = ({ isAdmin }) => {
           path="/:id"
           element={
             <UniqueBusiness
+              showMyBusinesses={viewMode === 'my'}
+              isAdmin={isAdmin}
               onEdit={setEditingBusiness}
               onDelete={handleDeleteClick}
               refetchKey={refetchKey}

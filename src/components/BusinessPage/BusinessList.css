@@ -110,6 +110,23 @@
   max-height: 4.5em;
 }
 
+.status {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status.approved {
+  color: #28a745;
+}
+
+.status.pending {
+  color: #ffc107;
+}
+
+.status.rejected {
+  color: #dc3545;
+}
+
 .business-actions {
   display: flex;
   gap: 10px;
@@ -149,7 +166,6 @@
 .business-actions .btn-danger:hover {
   background-color: #c82333;
 }
-
 
 .status-buttons {
   display: flex;

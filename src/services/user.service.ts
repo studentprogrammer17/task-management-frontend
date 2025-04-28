@@ -1,22 +1,44 @@
 import axios from 'axios';
 import { AuthService } from './auth.service';
-import { CreateUserByAdminDto, CreateUserDto, UpdateUserDto, User } from '../models/User';
+import {
+  CreateUserByAdminDto,
+  CreateUserDto,
+  UpdateUserDto,
+  User,
+} from '../models/User';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/users`;
 
 export class UserService {
-  static async getAllUsers(): Promise<User[]> {
+  static async getAllUsers(
+    search: string = '',
+    page: number = 1,
+    limit: number = 5
+  ): Promise<{ edges: User[]; pageInfo: any }> {
     const token = AuthService.getToken();
 
     if (!token) {
       throw new Error('User is not authenticated');
     }
 
-    const response = await axios.get<User[]>(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const params: Record<string, any> = {
+      page,
+      limit,
+    };
+
+    if (search) {
+      params.search = search;
+    }
+
+    const response = await axios.get<{ edges: User[]; pageInfo: any }>(
+      API_URL,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params,
+      }
+    );
 
     return response.data;
   }

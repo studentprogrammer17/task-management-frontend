@@ -5,12 +5,16 @@ import { BusinessService } from '../../services/business.service';
 import './UniqueBusiness.css';
 
 interface UniqueBusinessProps {
+  showMyBusinesses: boolean;
+  isAdmin: boolean;
   onEdit: (business: Business) => void;
   onDelete: (id: string, name: string) => void;
   refetchKey?: number;
 }
 
 const UniqueBusiness: React.FC<UniqueBusinessProps> = ({
+  showMyBusinesses,
+  isAdmin,
   onEdit,
   onDelete,
   refetchKey,
@@ -69,14 +73,16 @@ const UniqueBusiness: React.FC<UniqueBusinessProps> = ({
           ← Back to Businesses
         </button>
         <h1>{business.name}</h1>
-        <div className="business-actions-unique">
-          <button className="btn btn-warning" onClick={handleEdit}>
-            ✎ Edit
-          </button>
-          <button className="btn btn-danger" onClick={handleDelete}>
-            × Delete
-          </button>
-        </div>
+        {(showMyBusinesses || isAdmin) && (
+          <div className="business-actions-unique">
+            <button className="btn btn-warning" onClick={handleEdit}>
+              ✎ Edit
+            </button>
+            <button className="btn btn-danger" onClick={handleDelete}>
+              × Delete
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={`business-content ${!business.image ? 'no-image' : ''}`}>

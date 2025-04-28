@@ -5,6 +5,7 @@ import { BusinessService } from '../../services/business.service';
 import './BusinessList.css';
 
 interface BusinessListProps {
+  showMyBusinesses: boolean;
   businesses: Business[];
   isAdmin: boolean;
   onEdit: (business: Business) => void;
@@ -13,6 +14,7 @@ interface BusinessListProps {
 }
 
 const BusinessList: React.FC<BusinessListProps> = ({
+  showMyBusinesses,
   businesses,
   isAdmin,
   onEdit,
@@ -66,9 +68,14 @@ const BusinessList: React.FC<BusinessListProps> = ({
           )}
           <div className="business-info">
             <h3>{business.name}</h3>
-            <p>
-              <strong>Status:</strong> {business.status.toUpperCase()}
-            </p>
+            {showMyBusinesses && (
+              <p>
+                <strong>Status:</strong>{' '}
+                <span className={`status ${business.status}`}>
+                  {business.status.toUpperCase()}
+                </span>
+              </p>
+            )}
             <p>
               <strong>Owner:</strong> {business.ownerFullName}
             </p>
@@ -90,49 +97,56 @@ const BusinessList: React.FC<BusinessListProps> = ({
               </p>
             )}
           </div>
+          {(showMyBusinesses || isAdmin) && (
+            <div className="business-actions">
+              <button
+                className="btn btn-warning"
+                onClick={e => handleEditClick(e, business)}
+              >
+                Edit
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={e => handleDeleteClick(e, business.id, business.name)}
+              >
+                Delete
+              </button>
 
-          <div className="business-actions">
-            <button
-              className="btn btn-warning"
-              onClick={e => handleEditClick(e, business)}
-            >
-              Edit
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={e => handleDeleteClick(e, business.id, business.name)}
-            >
-              Delete
-            </button>
+              {isAdmin && business.status === 'pending' && (
+                <div className="status-buttons">
+                  <button
+                    className="btn btn-success"
+                    onClick={e =>
+                      handleStatusChange(e, business.id, 'approved')
+                    }
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={e =>
+                      handleStatusChange(e, business.id, 'rejected')
+                    }
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
 
-            {isAdmin && business.status === 'pending' && (
-              <div className="status-buttons">
-                <button
-                  className="btn btn-success"
-                  onClick={e => handleStatusChange(e, business.id, 'approved')}
-                >
-                  Approve
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={e => handleStatusChange(e, business.id, 'rejected')}
-                >
-                  Reject
-                </button>
-              </div>
-            )}
-
-            {isAdmin && business.status === 'rejected' && (
-              <div className="status-buttons">
-                <button
-                  className="btn btn-success"
-                  onClick={e => handleStatusChange(e, business.id, 'approved')}
-                >
-                  Approve
-                </button>
-              </div>
-            )}
-          </div>
+              {isAdmin && business.status === 'rejected' && (
+                <div className="status-buttons">
+                  <button
+                    className="btn btn-success"
+                    onClick={e =>
+                      handleStatusChange(e, business.id, 'approved')
+                    }
+                  >
+                    Approve
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       ))}
     </div>

@@ -21,6 +21,24 @@ export const BusinessService = {
       throw new Error('User is not authenticated');
     }
 
+    const response = await fetch(`${API_URL}/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch businesses');
+    }
+    return response.json();
+  },
+
+  async getAllUserBusinesses(): Promise<ApiResponse<Business[]>> {
+    const token = AuthService.getToken();
+
+    if (!token) {
+      throw new Error('User is not authenticated');
+    }
+
     const response = await fetch(API_URL, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -32,7 +50,9 @@ export const BusinessService = {
     return response.json();
   },
 
-  async getBusinessesByStatus(status: string): Promise<ApiResponse<Business[]>> {
+  async getBusinessesByStatus(
+    status: string
+  ): Promise<ApiResponse<Business[]>> {
     const token = AuthService.getToken();
 
     if (!token) {
